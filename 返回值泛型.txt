@@ -18,7 +18,12 @@
 
 
 
- List<OpenMesDTO> list = this.orderDaoSupport.queryForList(sql, OpenMesDTO.class, null);
+ @Override
+    public List<OpenMesDTO> getMesList() {
+        String sql = "SELECT * from dyp_open_mes WHERE is_del = 1";
+        List<OpenMesDTO> list = this.orderDaoSupport.queryForList(sql, OpenMesDTO.class, null);
+        return list;
+    }
  <T> List<T> queryForList(String sql, Class<T> clazz, Object... args);
  @Override
 	public <T> List<T> queryForList(String sql, Class<T> clazz, Object... args) {

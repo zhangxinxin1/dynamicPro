@@ -1,0 +1,28 @@
+
+
+
+
+  OpenMesDO openMesDO = this.orderDaoSupport.queryForObject(sql, OpenMesDO.class, mesId);
+  <T> T queryForObject(String sql,Class<T> clazz,Object... args);
+  
+	@Override
+	public <T> T queryForObject(String sql, Class<T> clazz, Object... args) {
+		List<T> objList = this.queryForList(sql, clazz, args);
+		if (objList.isEmpty()) {
+			return null;
+		}
+		return objList.get(0);
+	}
+
+
+
+
+
+ List<OpenMesDTO> list = this.orderDaoSupport.queryForList(sql, OpenMesDTO.class, null);
+ <T> List<T> queryForList(String sql, Class<T> clazz, Object... args);
+ @Override
+	public <T> List<T> queryForList(String sql, Class<T> clazz, Object... args) {
+
+		return this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<T>(clazz), args);
+
+	}

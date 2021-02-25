@@ -2,7 +2,20 @@
 
 
 
-  OpenMesDO openMesDO = this.orderDaoSupport.queryForObject(sql, OpenMesDO.class, mesId);
+   @Override
+    public OpenMesDTO getDetails(Integer mesId) {
+        if(mesId != null){
+            String sql = "SELECT * from dyp_open_mes WHERE mes_id = ?";
+            OpenMesDO openMesDO = this.orderDaoSupport.queryForObject(sql, OpenMesDO.class, mesId);
+            if(openMesDO != null){
+                OpenMesDTO openMesDTO = new OpenMesDTO();
+                BeanUtil.copyProperties(openMesDO,openMesDTO);
+                openMesDTO.setOpenTime(DateUtil.getTimeStr(openMesDO.getOpenTime()));
+                return openMesDTO;
+            }
+        }
+        return null;
+    }
   <T> T queryForObject(String sql,Class<T> clazz,Object... args);
   
 	@Override

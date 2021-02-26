@@ -1,0 +1,61 @@
+CREATE TABLE `dyp_menu` (
+  `id` int(8) NOT NULL AUTO_INCREMENT COMMENT '菜单id',
+  `parent_id` int(8) DEFAULT NULL COMMENT '父id',
+  `title` varchar(255) DEFAULT NULL COMMENT '菜单标题',
+  `url` varchar(255) DEFAULT NULL COMMENT '菜单url',
+  `identifier` varchar(255) DEFAULT NULL COMMENT '菜单唯一标识',
+  `auth_regular` varchar(255) DEFAULT NULL COMMENT '权限表达式',
+  `delete_flag` int(2) DEFAULT NULL COMMENT '删除标记',
+  `path` varchar(255) DEFAULT NULL COMMENT '菜单级别标识',
+  `grade` int(8) DEFAULT NULL COMMENT '菜单级别',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3130 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='菜单表(dyp_menu)';
+
+-- ----------------------------
+-- Records of dyp_menu
+-- ----------------------------
+INSERT INTO `dyp_menu` VALUES ('282', '0', '系统设置', null, 'setting', '/setting.*', '0', ',83,', '1');
+INSERT INTO `dyp_menu` VALUES ('3010', '282', '权限管理', null, 'authSettings', '/system.*', '0', ',83,194,', '2');
+INSERT INTO `dyp_menu` VALUES ('3011', '3010', '管理员管理', null, 'administratorManage', '(/base-api/uploaders.*)|(/admin/systems/manager/ad.*)', '0', ',83,194,195,', '3');
+INSERT INTO `dyp_menu` VALUES ('3012', '3010', '角色管理', null, 'roleManage', '(/admin/systems/roles.*)|(/admin/systems/menus.*)', '0', ',83,194,196,', '3');
+INSERT INTO `dyp_menu` VALUES ('3020', '282', '日志管理', '', 'logsManage', '/syslogs.*', '0', ',83,3020,', '2');
+INSERT INTO `dyp_menu` VALUES ('3050', '282', '菜单管理', '', 'menuManage', '/admin/systems/menus.*', '0', ',83,106,', '2');
+INSERT INTO `dyp_menu` VALUES ('3060', '282', '网站设置', '', 'shopSettings', '/system.*', '0', ',83,3060,', '2');
+INSERT INTO `dyp_menu` VALUES ('3063', '3060', '短信网关设置', '', 'smsGatewaySettings', '/admin/systems/platforms.*', '0', ',83,82,85,', '3');
+INSERT INTO `dyp_menu` VALUES ('3064', '3060', '储存方案', '', 'storageSolution', '/admin/systems/uploaders.*', '0', ',83,82,89,', '3');
+INSERT INTO `dyp_menu` VALUES ('3094', '0', '会员管理', '', 'member', '/member.*', '0', ',3094,', '1');
+INSERT INTO `dyp_menu` VALUES ('3095', '3094', '会员信息', '', 'member-list', '/member-list.*', '0', ',3094,3095,', '2');
+INSERT INTO `dyp_menu` VALUES ('3096', '0', '企业管理', null, 'memberManageResp', './memberManageResp.*', '0', ',3096,', '1');
+INSERT INTO `dyp_menu` VALUES ('3097', '3096', '已认证', '', 'memberEnterpriseManagement', '/memberEnterpriseManagement.*', '0', ',3096,3097,', '2');
+INSERT INTO `dyp_menu` VALUES ('3098', '3096', '待认证', '', 'memberEnterpriseCertificationManagement', '/memberEnterpriseCertificationManagement.*', '0', ',3096,3098,', '2');
+INSERT INTO `dyp_menu` VALUES ('3099', '0', '甲方订单', null, 'mesOrder', './mesOrder.*', '0', ',3099,', '1');
+INSERT INTO `dyp_menu` VALUES ('3100', '3099', '新订单', '', 'newOrder', '/newOrder.*', '0', ',3099,3100,', '2');
+INSERT INTO `dyp_menu` VALUES ('3101', '3099', '派单中', '', 'paidanIng', '/paidanIng.*', '0', ',3099,3101,', '2');
+INSERT INTO `dyp_menu` VALUES ('3102', '3099', '已派单', '', 'afterPaidang', '/afterPaidang.*', '0', ',3099,3102,', '2');
+INSERT INTO `dyp_menu` VALUES ('3103', '3099', '生产中', '', 'productIng', '/productIng.*', '0', ',3099,3103,', '2');
+INSERT INTO `dyp_menu` VALUES ('3104', '3099', '已完成', null, 'compalnt', '/compalnt.*', '0', ',3099,3104,', '2');
+INSERT INTO `dyp_menu` VALUES ('3105', '3099', '甲方财务', null, 'orderCaiwuInfo', '/orderCaiwuInfo.*', '0', ',3099,3105,', '2');
+INSERT INTO `dyp_menu` VALUES ('3106', '0', '乙方订单', null, 'mesOrderOther', '/mesOrderOther.*', '0', ',3106,', '1');
+INSERT INTO `dyp_menu` VALUES ('3107', '3106', '新订单(乙)', null, 'newOther', '/newOther.*', '0', ',3106,3107,', '2');
+INSERT INTO `dyp_menu` VALUES ('3108', '3106', '生产中（乙）', null, 'productOther', '/productOther.*', '0', ',3106,3108,', '2');
+INSERT INTO `dyp_menu` VALUES ('3109', '3106', '已完成（乙）', null, 'complantOther', '/complantOther.*', '0', ',3106,3109,', '2');
+INSERT INTO `dyp_menu` VALUES ('3110', '3106', '乙方财务', null, 'caiwuInfoOther', '/caiwuInfoOther.*', '0', ',3106,3110,', '2');
+INSERT INTO `dyp_menu` VALUES ('3111', '0', '云MES', null, 'couldmes', '/couldmes.*', '0', ',3111,', '1');
+INSERT INTO `dyp_menu` VALUES ('3112', '3111', '云MES管理', null, 'couldmesList', '/couldmesList.*', '0', ',3111,3112,', '2');
+INSERT INTO `dyp_menu` VALUES ('3113', '282', '首页装修', null, 'indexDecoration', '/indexDecoration.*', '0', ',83,3113,', '2');
+INSERT INTO `dyp_menu` VALUES ('3114', '3113', '首页轮播', null, 'advertManage', '/advertManage.*', '0', ',83,3113,3114,', '3');
+INSERT INTO `dyp_menu` VALUES ('3115', '3113', '生产加工服务', null, 'platformManage', '/platformManage.*', '0', ',83,3113,3115,', '3');
+INSERT INTO `dyp_menu` VALUES ('3116', '3113', '云MES开通', null, 'newsManage', '/newsManage.*', '0', ',83,3113,3116,', '3');
+INSERT INTO `dyp_menu` VALUES ('3117', '3113', '合作伙伴', null, 'partnerManage', '/partnerManage.*', '0', ',83,3113,3117,', '3');
+INSERT INTO `dyp_menu` VALUES ('3118', '3113', '产品服务', null, 'productServer', '/productServer.*', '0', ',83,3113,3118,', '3');
+INSERT INTO `dyp_menu` VALUES ('3119', '3113', '关于我们', null, 'aboutUs', '/aboutUs.*', '0', ',83,3113,3119,', '3');
+INSERT INTO `dyp_menu` VALUES ('3120', '3113', '帮助中心', null, 'helpInfo', '/helpInfo.*', '0', ',83,3113,3120,', '3');
+INSERT INTO `dyp_menu` VALUES ('3121', '3113', '资质配置', null, 'quaInfo', '/quaInfo.*', '0', ',83,3113,3121,', '3');
+INSERT INTO `dyp_menu` VALUES ('3122', '282', '文章管理', null, 'articleManage', '/articleManage.*', '0', ',83,3122,', '2');
+INSERT INTO `dyp_menu` VALUES ('3123', '3122', '文章分类', null, 'articleCategory', '/.articleCategory', '0', ',83,3122,3123,', '3');
+INSERT INTO `dyp_menu` VALUES ('3124', '3122', '文章列表', null, 'articleList', '/articleList.*', '0', ',83,3122,3124,', '3');
+INSERT INTO `dyp_menu` VALUES ('3125', '282', '字典管理', '', 'dictInfo', '/dictInfo.*', '0', ',83,3125,', '2');
+INSERT INTO `dyp_menu` VALUES ('3126', '0', '统计分析', null, 'statistics', '/statistics.*', '0', ',3126,', '1');
+INSERT INTO `dyp_menu` VALUES ('3127', '3126', '会员注册统计', null, 'addedMember', '/addedMember.*', '0', ',3126,3127,', '2');
+INSERT INTO `dyp_menu` VALUES ('3128', '3126', '会员下单量', null, 'orderAmount', '/orderAmount.*', '0', ',3126,3128,', '2');
+INSERT INTO `dyp_menu` VALUES ('3129', '3126', '财务统计', null, 'financeList', '/financeList.*', '0', ',3126,3129,', '2');

@@ -1,0 +1,173 @@
+ @GetMapping("/{parent_id}/children")
+    public List<MenusVO> getMenuTree(@PathVariable("parent_id") @ApiIgnore Integer parentId) {
+        return this.menuManager.getMenuTree(parentId);
+    }
+    
+    
+    
+      @Override
+    public List<MenusVO> getMenuTree(Integer id) {
+        List<MenusVO> menuList = this.systemDaoSupport.queryForList("select * from dyp_menu where delete_flag = '0' order by id asc", MenusVO.class);
+        List<MenusVO> topMenuList = new ArrayList<MenusVO>();
+        System.out.println("menuList+++>"+menuList.toString());
+        for (MenusVO menu : menuList) {
+            if (menu.getParentId().compareTo(id) == 0) {
+
+                List<MenusVO> children = this.getChildren(menuList, menu.getId());
+                System.out.println("children++>"+children+"<>"+menuList+"<>"+menu.getId()+"<>"+menu.getParentId());
+                menu.setChildren(children);
+                topMenuList.add(menu);
+            }
+        }
+        return topMenuList;
+    }
+
+    /**
+     * 在一个集合中查找子
+     *
+     * @param menuList 所有菜单集合
+     * @param parentid 父id
+     * @return 找到的子集合
+     */
+    private List<MenusVO> getChildren(List<MenusVO> menuList, Integer parentid) {
+        List<MenusVO> children = new ArrayList<MenusVO>();
+        for (MenusVO menu : menuList) {
+            if (menu.getParentId().compareTo(parentid) == 0) {
+                menu.setChildren(this.getChildren(menuList, menu.getId()));
+                children.add(menu);
+            }
+        }
+        return children;
+    }
+    
+    public class MenusVO implements Serializable {
+
+    /**
+     * 菜单id
+     */
+    private Integer id;
+    /**
+     * 父id
+     */
+    private Integer parentId;
+    /**
+     * 菜单标题
+     */
+    private String title;
+    /**
+     * 菜单url
+     */
+    private String url;
+    /**
+     * 菜单唯一标识
+     */
+    private String identifier;
+    /**
+     * 权限表达式
+     */
+    private String authRegular;
+    /**
+     * 删除标记
+     */
+    private Integer deleteFlag;
+    /**
+     * 子菜单
+     */
+    private List<MenusVO> children;
+
+    @PrimaryKeyField
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getAuthRegular() {
+        return authRegular;
+    }
+
+    public void setAuthRegular(String authRegular) {
+        this.authRegular = authRegular;
+    }
+
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+
+    public List<MenusVO> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<MenusVO> children) {
+        this.children = children;
+    }
+
+
+    @Override
+    public String toString() {
+        return "MenusVO{" +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", authRegular='" + authRegular + '\'' +
+                ", deleteFlag=" + deleteFlag +
+                ", children=" + children +
+                '}';
+    }
+    
+    
+    
+    
+    
+    CREATE TABLE `dyp_menu` (
+  `id` int(8) NOT NULL AUTO_INCREMENT COMMENT '菜单id',
+  `parent_id` int(8) DEFAULT NULL COMMENT '父id',
+  `title` varchar(255) DEFAULT NULL COMMENT '菜单标题',
+  `url` varchar(255) DEFAULT NULL COMMENT '菜单url',
+  `identifier` varchar(255) DEFAULT NULL COMMENT '菜单唯一标识',
+  `auth_regular` varchar(255) DEFAULT NULL COMMENT '权限表达式',
+  `delete_flag` int(2) DEFAULT NULL COMMENT '删除标记',
+  `path` varchar(255) DEFAULT NULL COMMENT '菜单级别标识',
+  `grade` int(8) DEFAULT NULL COMMENT '菜单级别',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3130 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='菜单表(dyp_menu)';

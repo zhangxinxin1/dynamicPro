@@ -1,0 +1,40 @@
+
+#启动服务
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  config-service-2.0.0.jar        > nohup-config.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  eureka-2.0.0.jar                > nohup-eureka.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  gateway-service-2.0.0.jar       > nohup-gateway.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  member-service-2.0.0.jar        > nohup-member.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  order-service-2.0.0.jar         > nohup-order.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  system-service-2.0.0.jar        > nohup-system.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  consumer-2.0.0.jar        > nohup-consumer.log 2>&1 &
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  statistics-service-2.0.0.jar        > nohup-statistics.log  2>&1 &
+
+ pm2 status 0
+ pm2 delete 0
+ pm2 start npm --name "buyer-pc" -- run start
+
+#查看jar状态
+ps -ef | grep config-service-2.0.0.jar             
+ps -ef | grep eureka-2.0.0.jar           
+ps -ef | grep gateway-service-2.0.0.jar       
+ps -ef | grep member-service-2.0.0.jar      
+ps -ef | grep order-service-2.0.0.jar    
+ps -ef | grep system-service-2.0.0.jar    
+ps -ef | grep consumer-2.0.0.jar  
+ps -ef | grep statistics-service-2.0.0.jar  
+
+
+#进入jar目录
+cd /var/deploy/dyptest
+
+#查看redis
+ps -ef | grep redis
+#进入 xxl-job 目录
+/var/deploy/xxl-job
+
+ps -ef | grep xxl-job-admin-2.2.0.jar
+
+nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile.encoding=utf-8  xxl-job-admin-2.2.0.jar        > nohup-xxl-job.log  2>&1 &
+
+
+idea 工具：Terminal 执行：mvn clean install -DskipTests -f pom.xml

@@ -23,3 +23,5 @@ CREATE TABLE `dyp_order_part` (
 ) ENGINE=InnoDB AUTO_INCREMENT=651 DEFAULT CHARSET=utf8mb4 COMMENT='零件信息表';
 
 ALTER TABLE `mfg_equip` ADD INDEX  ( `code` ) 
+
+select * from information_schema.innodb_trx

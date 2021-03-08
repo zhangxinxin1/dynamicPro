@@ -38,3 +38,10 @@ nohup java -jar -Xms300m -Xmx300m -XX:PermSize=600M -XX:MaxPermSize=600m  -Dfile
 
 
 idea 工具：Terminal 执行：mvn clean install -DskipTests -f pom.xml
+
+spring:
+  datasource:
+    url: jdbc:mysql://124.70.131.59:3306/dyp_order?useUnicode=true&characterEncoding=utf8&autoReconnect=true
+    username: root
+    password: ruanmeng@q1w2E#R$T%
+    driver-class-name: com.mysql.jdbc.Driver

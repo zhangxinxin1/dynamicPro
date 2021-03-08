@@ -132,3 +132,14 @@
 	 return  "";
 
 	}
+	
+	
+	
+	
+   TransactionAutoConfiguration#transactionalOperator:
+      Did not match:
+         - @ConditionalOnSingleCandidate (types: org.springframework.transaction.ReactiveTransactionManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+	   @Transactional(value = "xxxxxxxxx",propagation = Propagation.REQUIRED,rollbackFor =  Exception.class)   -> 
+	  @Transactional(value = "",propagation = Propagation.REQUIRED,rollbackFor =  Exception.class)
+	 
+	

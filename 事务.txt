@@ -145,7 +145,7 @@
       Matched:
          - @ConditionalOnClass found required classes 'org.springframework.boot.actuate.env.EnvironmentEndpoint', 'org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointProperties' (OnClassCondition)
 
-   XADataSourceAutoConfiguration:
+   
       Did not match:
          - @ConditionalOnClass did not find required class 'javax.transaction.TransactionManager' (OnClassCondition)
 

@@ -1,0 +1,134 @@
+@Transactional(value = "tradeTransactionManager",propagation = Propagation.REQUIRED,rollbackFor = {RuntimeException.class, ServiceException.class, Exception.class})
+	@Override
+	public String sendOrderByAdmin(SendOrderSubmitAdminParmsVo parms) {
+
+        //   注意 此接口 比较复杂  做之前 先看清注释
+        //   1.1   根据零件id列表 partIdList   先判断 是否已派单  如有一个派单 则提示 当前零件已派单，请重新选择
+
+		System.out.println(" 1.1   根据零件id列表 partIdList   先判断 是否已派单  如有一个派单 则提示 当前零件已派单，请重新选择");
+		System.out.println("甲方订单派单 send-order  service start++++++++++++++++++++++"+parms);
+	  try {
+			if (parms.getPartIdList() != null && parms.getPartIdList().size() > 0) {
+				parms.getPartIdList().stream().forEach(x -> {
+					OrderPartDO orderPart = orderPartManager.getModel(x);
+					if (orderPart != null) {
+						if (orderPart.getSendStatus() == 1) {
+							throw new ServiceException(ContentErrorCode.E9903.name(), orderPart.getPartName() + " 已派单，请重新选择");
+						}
+					} else {
+						throw new ServiceException(ContentErrorCode.E9903.name(), "零件不存在！");
+					}
+				});
+			} else {
+				throw new ServiceException(ContentErrorCode.E9903.name(), "请选择零件！");
+			}
+			//  1.2 获取甲方订单 并赋值给乙方订单  注意 dyp_produce_order.source_order_id=dyp_order.id
+			System.out.println(" 1.2 获取甲方订单 并赋值给乙方订单  注意 dyp_produce_order.source_order_id=dyp_order.id");
+			OrderDO model = this.getModel(parms.getId());
+			ProduceOrderDO produceOrder = new ProduceOrderDO();
+			produceOrder.setSourceOrderId(parms.getId());
+			if (model != null) {
+				//  1.2 order信息赋值
+				System.out.println("甲方订单派单 send-order  service start++++++++++++++++++++++" + model);
+				BeanUtils.copyProperties(model, produceOrder);
+			}
+
+
+			String mesSql = "SELECT * from dyp_open_mes WHERE mes_id = ? ";
+			OpenMesDTO result = this.daoSupport.queryForObject(mesSql, OpenMesDTO.class, parms.getEnterpriseId());
+			logger.info("mesResult+++++++++++++++++++++++++++>" + result);
+			if (result == null) {
+				//未开通云mes
+				logger.info("未开通云mes+++++++++++++++++++++++++++>");
+				produceOrder.setAuthEnterpriseId(parms.getEnterpriseId());
+			} else {
+				//开通云mes
+				logger.info("开通云mes+++++++++++++++++++++++++++>");
+				produceOrder.setProduceEnterpriseId(parms.getEnterpriseId());
+			}
+			produceOrder.setContractTime(parms.getContractTime());
+			produceOrder.setContractCode(parms.getContractCode());
+			produceOrder.setContractName(parms.getContractName());
+			produceOrder.setContractPrice(parms.getContractPrice());
+			produceOrder.setOrderRemark(parms.getOrderRemark());
+			produceOrder.setPost(parms.getPost());
+			logger.info("produceOrderOrderRemark++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + produceOrder.getOrderRemark());
+			logger.info("produceOrderPost++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + produceOrder.getPost());
+			//  1.3 新增 乙方订单, 合同信息 来自parms
+			System.out.println("1.3 新增 乙方订单, 合同信息 来自parms");
+			produceOrderManager.add(produceOrder);
+			Integer orderId = this.daoSupport.getLastId("dyp_produce_order");
+			produceOrder.setContractCode(parms.getContractCode());
+			//  1.4 新增 乙方零件   遍历 零件列表
+			System.out.println(" 1.4 新增 乙方零件   遍历 零件列表");
+
+			parms.getPartIdList().stream().forEach(x -> {
+				OrderPartDO orderPart = orderPartManager.getModel(x);
+				//更新已派单的甲方零件,新增乙方订单零件信息
+				System.out.println(" 更新已派单的甲方零件,新增乙方订单零件信息:" + orderPart.toString());
+				orderPartManager.update(orderPart.getId(), 1);
+				addProduceOrderPartByAdmin(orderPart, orderId);
+			});
+
+
+			Integer pFlag = 0;
+			logger.info("IsOpenEms+++++>" + result + "<IsDel>" + result);
+			//已开通MES
+			if (result != null) {
+				if (result.getIsOpenEms() == 1 && result.getIsDel() == 1) {
+					//  ---------------云MES操作开始----------------------
+					logger.info("-------------云MES操作开始--------------++++++++++++++++++++++++++++++++++++++++++++++");
+					CreateDyProduceOrderParmsVo createDyProduce = new CreateDyProduceOrderParmsVo();
+					BeanUtils.copyProperties(produceOrder, createDyProduce);
+					logger.info("createDyProduce+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + createDyProduce);
+					createDyProduce.setSourceOrderId(orderId.longValue());
+					List<DypProduceOrderPartAddParmsVo> partList = new ArrayList<>();
+					TokenVo tokenparm = new TokenVo();
+
+					tokenparm.setEnterpriseName(result.getEnterpriseAccount());
+					List<Integer> partIdList = parms.getPartIdList();
+					for (Integer partId : partIdList) {
+						partList.add(getOrderPartList(partId));
+					}
+					createDyProduce.setPartList(partList);
+					System.out.println("createDyProduce++++++++++++>" + createDyProduce);
+
+					String token = mesCallBackManager.getToken(tokenparm);
+					JSONObject json = JSONObject.fromObject(createDyProduce);
+					Map<String, String> map = new HashMap<>();
+					map.put("Authorization", token.trim());
+					//添加至云mes
+					System.out.println(" 添加至云mes");
+					logger.info("添加至云mes++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+					Map<String, Object> mapResult = mesCallBackManager.addMesOrder(json.toString(), map);
+
+				}
+
+				//  ---------------云MES操作结束----------------------
+
+
+				System.out.println("produceOrder.getId()+++>" + produceOrder.getId() + "<>" + orderId);
+				ProduceOrderDO produceOrderObj = produceOrderManager.getModel(orderId);
+				System.out.println("produceOrderObj+++>" + produceOrderObj.toString());
+				//更新乙方订单是否开通状态
+				produceOrderManager.update(orderId, 1);
+			}
+
+			String orderSql = "SELECT * from dyp_order_part WHERE  send_status =0 and order_id = ? ";
+			List<OrderPartDO> partResult = this.daoSupport.queryForList(orderSql, OrderPartDO.class, parms.getId());
+			//更新甲方订单状态
+			System.out.println(" 更新甲方订单状态");
+			if (partResult == null || partResult.isEmpty()) {
+				OrderDO orderObj = new OrderDO();
+				orderObj.setSendStatus(2);
+				orderManager.edit(orderObj, parms.getId());
+			}
+
+	 }catch (Exception e){
+		e.getMessage();
+		e.printStackTrace();
+		throw new ServiceException(ContentErrorCode.E9903.code(), "派单异常,请联系管理员!");
+	 }
+	 return  "";
+
+	}

@@ -135,10 +135,22 @@
 	
 	
 	
-	
-   TransactionAutoConfiguration#transactionalOperator:
+   WebSocketServletAutoConfiguration.UndertowWebSocketConfiguration:
       Did not match:
-         - @ConditionalOnSingleCandidate (types: org.springframework.transaction.ReactiveTransactionManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+         - @ConditionalOnClass did not find required class 'io.undertow.websockets.jsr.Bootstrap' (OnClassCondition)
+
+   WritableEnvironmentEndpointAutoConfiguration:
+      Did not match:
+         - @ConditionalOnProperty (management.endpoint.env.post.enabled) did not find property 'management.endpoint.env.post.enabled' (OnPropertyCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'org.springframework.boot.actuate.env.EnvironmentEndpoint', 'org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointProperties' (OnClassCondition)
+
+   XADataSourceAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'javax.transaction.TransactionManager' (OnClassCondition)
+
+
+
 	   @Transactional(value = "xxxxxxxxx",propagation = Propagation.REQUIRED,rollbackFor =  Exception.class)   -> 
 	  @Transactional(value = "",propagation = Propagation.REQUIRED,rollbackFor =  Exception.class)
 	 

@@ -1,0 +1,23 @@
+
+CREATE TABLE `dyp_order_part` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '零件信息主键',
+  `order_id` int(11) DEFAULT NULL COMMENT '订单id',
+  `part_name` varchar(255) DEFAULT NULL COMMENT '零件名称',
+  `work_code` varchar(64) DEFAULT NULL COMMENT '工单号',
+  `part_code` varchar(64) DEFAULT NULL COMMENT '零件编码',
+  `part_icon_num` varchar(64) DEFAULT NULL COMMENT '零件图号',
+  `science` varchar(255) DEFAULT NULL COMMENT '材质',
+  `quantity` int(11) DEFAULT NULL COMMENT '数量',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `roughcast_icon_num` varchar(64) DEFAULT NULL COMMENT '毛坯图号',
+  `unit_id` int(11) DEFAULT NULL COMMENT '单位id',
+  `unit_name` varchar(20) DEFAULT NULL COMMENT '单位名称',
+  `send_status` tinyint(1) DEFAULT '0' COMMENT '派单状态：0 未派单 1 已派单',
+  `sketch_json` varchar(500) DEFAULT NULL COMMENT '示意图json',
+  `progress_rate` int(11) DEFAULT '0' COMMENT '零件进度%',
+  `del_status` tinyint(1) DEFAULT '0' COMMENT '删除状态 0：未删除 1 已删除',
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`),
+  KEY `part_code` (`part_code`),
+  KEY `order_id` (`order_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=651 DEFAULT CHARSET=utf8mb4 COMMENT='零件信息表';

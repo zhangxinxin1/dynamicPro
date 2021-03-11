@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mes.manufacture.mapper.MfgProlineMapper">
+
+    <resultMap type="MfgProline" id="MfgProlineResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="prolineName" column="proline_name"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="authStatus" column="auth_status"/>
+        <result property="remark" column="remark"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="factoryName" column="name"/>
+        <collection property="proteamList"     ofType="com.mes.manufacture.domain.MfgProteam"  select="queryTemplateById" column="id">
+<!--            <id column="pid" property="id"/>-->
+            <result column="proteam_name" property="proteamName"/>
+            <result column="status" property="status"/>
+            <result column="day_amount" property="dayAmount"/>
+            <result column="final_time" property="finalTime"/>
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="teamResultMap" type="com.mes.manufacture.domain.MfgProteam">
+        <id column="pid" property="id"/>
+        <result column="proteam_name" property="proteamName"/>
+        <result column="status" property="status"/>
+        <result column="day_amount" property="dayAmount"/>
+        <result column="final_time" property="finalTime"/>
+    </resultMap>
+
+
+
+    <resultMap type="com.mes.manufacture.domain.vo.MfgProLineVo" id="MfgProlineRes">
+        <result property="id" column="id"/>
+        <result property="factoryId" column="factory_id"/>
+        <result property="prolineName" column="proline_name"/>
+        <collection property="proTeamList" ofType="com.mes.manufacture.domain.vo.MfgTeamVo">
+            <id column="pid" property="teamId"/>
+            <result column="proteam_name" property="proteamName"/>
+            <result column="day_amount" property="dayAmount"/>
+        </collection>
+
+    </resultMap>
+
+    <sql id="selectMfgProlineVo">
+        select id, code, proline_name,auth_status, factory_id, order_num, remark, status, del_flag, create_by, create_time, update_by, update_time from mfg_proline
+    </sql>
+
+    <!--查询生产线词典-->
+    <select id="selectDic" parameterType="MfgProlineDicParmsVo" resultType="DicVo">
+        SELECT id , proline_name name from mfg_proline
+        where del_flag='0' and status = '0'
+        <if test="factoryId != null">and  factory_id = #{factoryId}</if>
+        order by order_num asc
+    </select>
+
+    <select id="queryTemplateById"  resultMap="teamResultMap">
+        SELECT
+        pt.id AS pid,
+        pt.proteam_name,
+        pt. STATUS,
+        pt.day_amount,
+        (
+        CASE
+        WHEN pt.final_time IS NULL THEN
+        date_add(now(), INTERVAL 1 DAY)
+        ELSE
+        date_add(pt.final_time, INTERVAL 1 DAY)
+        END
+        ) AS final_time
+        FROM
+        mfg_proteam pt  where  pt.id = #{id}
+    </select>
+
+    <select id="selectTeamList"  parameterType="Long"  resultMap="MfgProlineRes">
+
+
+        SELECT
+        tmp.id AS pid,
+        tmp.proline_id AS id,
+        pl.proline_name,
+        pl.factory_id,
+        tmp.proteam_name,
+        tmp.day_amount,
+        tmp. STATUS
+        FROM
+        (
+        SELECT
+        pt.id,
+        pt.proline_id,
+        pt.proteam_name,
+        pt.day_amount,
+        pt. STATUS
+        FROM
+        mfg_proteam pt
+        WHERE
+        id IN (
+        SELECT
+        team_id
+        FROM
+        mfg_team_procedure where pro_id = #{proId}
+        )  and  del_flag='0'
+        ) tmp
+        LEFT JOIN mfg_proline pl ON pl.id = tmp.proline_id
+
+    </select>
+
+
+    <select id="selectProlineList" parameterType="MfgProline" resultMap="MfgProlineRes">
+        SELECT pl.id,pl.proline_name,pl.factory_id,   pt.id as
+        pid,pt.proteam_name,pt.status,pt.day_amount from mfg_proline pl
+        LEFT JOIN mfg_proteam pt on pl.id=pt.proline_id   right join  mfg_team_procedure  tmpro  on tmpro.team_id=pt.id
+        where pl.del_flag='0' order by pl.create_time desc
+    </select>
+
+    <select id="selectMfgProlineList" parameterType="MfgProline" resultMap="MfgProlineResult">
+        SELECT pl.id, pl.code, pl.proline_name,pl.auth_status, pl.factory_id,
+        pl.order_num, pl.remark, pl.status, pl.del_flag, pl.create_by,
+        pl.create_time, pl.update_by, pl.update_time,fy.name from mfg_proline pl
+
+        LEFT JOIN mfg_factory fy on pl.factory_id=fy.id
+        where pl.del_flag='0'
+        <if test="code != null  and code != ''">and  pl.code like concat('%', #{code},'%')</if>
+        <if test="prolineName != null  and prolineName != ''">and pl.proline_name like concat('%', #{prolineName}, '%')
+        </if>
+        <if test="factoryId != null ">and pl.factory_id = #{factoryId}</if>
+        <if test="orderNum != null ">and pl.order_num = #{orderNum}</if>
+        <if test="status != null  and status != ''">and pl.status = #{status}</if>
+        order by pl.order_num  asc, pl.create_time desc
+    </select>
+
+
+
+    <select id="selectMfgProlineById" parameterType="Long" resultMap="MfgProlineResult">
+        <include refid="selectMfgProlineVo"/>
+        where id = #{id} and del_flag = '0'
+    </select>
+
+    <insert id="insertMfgProline" parameterType="MfgProline" useGeneratedKeys="true" keyProperty="id">
+        insert into mfg_proline
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="code != null">code,</if>
+            <if test="prolineName != null">proline_name,</if>
+            <if test="factoryId != null">factory_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="code != null">#{code},</if>
+            <if test="prolineName != null">#{prolineName},</if>
+            <if test="factoryId != null">#{factoryId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMfgProline" parameterType="MfgProline">
+        update mfg_proline
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null">code = #{code},</if>
+            <if test="prolineName != null">proline_name = #{prolineName},</if>
+            <if test="factoryId != null">factory_id = #{factoryId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="authStatus !=null">auth_status=#{authStatus}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMfgProlineById" parameterType="Long">
+        update mfg_proline set del_flag = '2'  where id = #{id}
+    </delete>
+
+    <delete id="deleteMfgProlineByIds" parameterType="String">
+        update mfg_proline set del_flag = '2' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="checkMfgProlineName" parameterType="String" resultMap="MfgProlineResult">
+        <include refid="selectMfgProlineVo"/>
+        where  proline_name = #{prolineName} and  del_flag = '0' limit 1
+    </select>
+
+</mapper>

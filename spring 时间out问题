@@ -1,0 +1,1 @@
+数据库中有些表被lock，通过查询sql的执行信息，给对应的表加索引和设置前端timeout时间解决问题  stream gateway   删除

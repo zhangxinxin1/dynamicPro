@@ -45,3 +45,5 @@ spring:
     username: root
     password: ruanmeng@q1w2E#R$T%
     driver-class-name: com.mysql.jdbc.Driver
+    clean package
+    mvn clean install -DskipTests -f pom.xml

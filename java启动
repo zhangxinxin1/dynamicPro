@@ -46,4 +46,4 @@ spring:
     password: ruanmeng@q1w2E#R$T%
     driver-class-name: com.mysql.jdbc.Driver
     clean package
-    mvn clean install -DskipTests -f pom.xml
+    idea 工具：Terminal 执行：mvn clean install -DskipTests -f pom.xml

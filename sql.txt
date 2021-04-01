@@ -1,0 +1,54 @@
+ SELECT
+        pr.id,
+        pr.task_name,
+        pr.task_code,
+        pr.tasktype_id,
+        pr.taskcategory_id,
+        pr.pro_id,
+        amount,
+        pr.start_time,
+        pr.end_time,
+        pr.team_id,
+        pr.factory_id,
+        pr.procedure_id,
+        pr.station_id,
+        pr.user_id,
+        pr.phone,
+        pd.order_num,
+        pr.remark,
+        pr.status,
+        pr.del_flag,
+        pr.create_by,
+        pr.create_time,
+        pr.update_by,
+        pr.update_time,
+        pr.proline_id,
+        pr.finish_amount,
+        pr.unqualified_amount,
+        pr.qualified_amount,
+        pr.dept_id,
+        fa.name,
+        pro.pro_name,
+        pro.pro_icon_num,
+        pro.code,
+        pl.proline_name,
+        st.station_name,
+        tm.proteam_name,
+        pd.procedure_name,
+        u.nick_name as user_name,
+        pr.dispatch_id
+        FROM
+        mfg_protask pr
+        LEFT JOIN mfg_factory fa ON pr.factory_id = fa.id
+        LEFT JOIN mfg_pro pro ON pr.pro_id = pro.id
+        LEFT JOIN mfg_proline pl ON pr.proline_id = pl.id
+        LEFT JOIN mfg_station st ON pr.station_id = st.id
+        LEFT JOIN mfg_proteam tm ON pr.team_id = tm.id
+        LEFT JOIN mfg_procedure pd ON pr.procedure_id = pd.id
+        LEFT JOIN sys_user u ON pr.user_id = u.user_id
+        LEFT JOIN sys_dept d on pr.dept_id = d.dept_id
+        LEFT JOIN sys_user_role r on pr.user_id=r.user_id LEFT JOIN sys_role sr on sr.role_id=r.role_id
+        WHERE
+        pr.del_flag = '0'     order by dispatch_id desc, order_num desc
+        
+        

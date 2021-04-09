@@ -25,6 +25,7 @@
             <result column="status" property="status"/>
             <result column="day_amount" property="dayAmount"/>
             <result column="final_time" property="finalTime"/>
+            <result column="proline_id" property="prolineId"/>
         </collection>
 
     </resultMap>
@@ -35,9 +36,8 @@
         <result column="status" property="status"/>
         <result column="day_amount" property="dayAmount"/>
         <result column="final_time" property="finalTime"/>
+        <result column="proline_id" property="prolineId"/>
     </resultMap>
-
-
 
     <resultMap type="com.mes.manufacture.domain.vo.MfgProLineVo" id="MfgProlineRes">
         <result property="id" column="id"/>
@@ -69,6 +69,7 @@
         pt.proteam_name,
         pt. STATUS,
         pt.day_amount,
+        pt.proline_id,
         (
         CASE
         WHEN pt.final_time IS NULL THEN
@@ -78,7 +79,7 @@
         END
         ) AS final_time
         FROM
-        mfg_proteam pt  where  pt.id = #{id}
+        mfg_proteam pt  where  pt.proline_id = #{id}
     </select>
 
     <select id="selectTeamList"  parameterType="Long"  resultMap="MfgProlineRes">
@@ -103,12 +104,8 @@
         FROM
         mfg_proteam pt
         WHERE
-        id IN (
-        SELECT
-        team_id
-        FROM
-        mfg_team_procedure where pro_id = #{proId}
-        )  and  del_flag='0'
+        pt.pro_id =  #{proId}
+          and  del_flag='0'
         ) tmp
         LEFT JOIN mfg_proline pl ON pl.id = tmp.proline_id
 

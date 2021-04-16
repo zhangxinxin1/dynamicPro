@@ -1,0 +1,6 @@
+ SELECT
+        sum(plan_amount)
+        FROM
+        mfg_plandetail
+        WHERE
+        TO_DAYS(create_time) = TO_DAYS(NOW())

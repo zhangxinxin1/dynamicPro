@@ -1,0 +1,5 @@
+ List<TaskLogResultVo> resultVo= new ArrayList<>();
+        resultVo= iMfgProtaskService.taskLogById(id);
+        if(resultVo != null && !resultVo.isEmpty()) {
+           result.setLogList(resultVo);
+        }
